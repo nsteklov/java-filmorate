@@ -44,7 +44,7 @@ public class UserController {
             throw new ValidationException(error);
         }
         if (user.getBirthday().isAfter(LocalDate.now())) {
-            error = "Дата рождения не может быть в будущем";
+            error = "Дата рождения не может быть будущей датой";
             log.error(error);
             throw new ValidationException(error);
         }
@@ -87,7 +87,7 @@ public class UserController {
                 throw new ValidationException(error);
             }
             if (newUser.getBirthday().isAfter(LocalDate.now())) {
-                error = "Дата рождения не может быть в будущем";
+                error = "Дата рождения не может быть будущей датой";
                 log.error(error);
                 throw new ValidationException(error);
             }
