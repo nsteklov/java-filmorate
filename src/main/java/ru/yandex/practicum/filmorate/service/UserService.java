@@ -35,11 +35,11 @@ UserService {
     }
 
     public User addFriend(Long id, Long friendId) {
-        if (id == friendId) {
-            error = "Пользователя нельзя добавить в друзья к самому себе";
-            log.error(error);
-            throw new ValidationException(error);
-        }
+//        if (id == friendId) {
+//            error = "Пользователя нельзя добавить в друзья к самому себе";
+//            log.error(error);
+//            throw new ValidationException(error);
+//        }
         Optional<User> optUser = userStorage.findUserById(id);
         Optional<User> optFriend = userStorage.findUserById(friendId);
         User user = optUser.get();
@@ -53,11 +53,11 @@ UserService {
     }
 
     public User deleteFriend(Long id, Long friendId) {
-        if (id == friendId) {
-            error = "Пользователя не может быть в друзьях у самого себя";
-            log.error(error);
-            throw new ValidationException(error);
-        }
+//        if (id == friendId) {
+//            error = "Пользователя не может быть в друзьях у самого себя";
+//            log.error(error);
+//            throw new ValidationException(error);
+//        }
         Optional<User> optUser = userStorage.findUserById(id);
         User user = optUser.get();
         user.getFriends().remove(friendId);
