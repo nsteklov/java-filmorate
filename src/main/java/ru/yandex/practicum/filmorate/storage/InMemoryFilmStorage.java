@@ -14,7 +14,6 @@ import java.util.*;
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
     String error;
-//    private final static Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(InMemoryFilmStorage.class);
 
     @Override
     public Collection<Film> findAll() {
