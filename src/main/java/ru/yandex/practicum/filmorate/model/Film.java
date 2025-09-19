@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 /**
  * Film.
@@ -11,9 +12,10 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 public class Film {
-    Integer id;
+    Long id;
     String name;
     String description;
     LocalDate releaseDate;
     int duration;
+    Set<Long> likes;
 }
