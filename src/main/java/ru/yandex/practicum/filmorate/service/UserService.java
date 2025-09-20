@@ -5,10 +5,11 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.model.FriendStatus;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -44,10 +45,10 @@ UserService {
         Optional<User> optFriend = userStorage.findUserById(friendId);
         User user = optUser.get();
         User friend = optFriend.get();
-        Set<Long> friendsOfUser = user.getFriends();
-        friendsOfUser.add(friendId);
-        Set<Long> friendsOfFriend = friend.getFriends();
-        friendsOfFriend.add(id);
+        Map<Long, FriendStatus> friendsOfUser = user.getFriends();
+        friendsOfUser.put(friendId, FriendStatus.UNCONFIRMED);
+        Map<Long, FriendStatus> friendsOfFriend = friend.getFriends();
+        friendsOfFriend.put(id, FriendStatus.UNCONFIRMED);
         log.info("Пользователи {} и {} стали друзьями", user, friend);
         return user;
     }
@@ -71,7 +72,7 @@ UserService {
     public Collection getUserFriends(Long id) {
         Optional<User> optUser = userStorage.findUserById(id);
         log.debug("Получены список друзей пользователя {}", optUser.get());
-        return optUser.get().getFriends().stream()
+        return optUser.get().getFriends().keySet().stream()
                 .map(userStorage::findUserById)
                 .collect(Collectors.toList());
     }
@@ -80,8 +81,8 @@ UserService {
         Optional<User> optUser = userStorage.findUserById(id);
         Optional<User> optOtherUser = userStorage.findUserById(otherId);
         log.debug("Получены список общий друзей пользователей {} и {}", optUser.get(), optOtherUser.get());
-        return optUser.get().getFriends().stream()
-                .filter(optOtherUser.get().getFriends()::contains)
+        return optUser.get().getFriends().keySet().stream()
+                .filter(optOtherUser.get().getFriends().keySet()::contains)
                 .map(userStorage::findUserById)
                 .collect(Collectors.toList());
     }
