@@ -8,11 +8,11 @@ Template repository for Filmorate project.
 1) Список 5 наиболее популярных фильмов
 SELECT f.id,
        f.name,
-       COUNT(fl.film_id)
+       COUNT(fl.film_id) 
 FROM film AS f
 LEFT OUTER JOIN film_likes AS fl ON f.id = fl.film_id
-GROUP BY id,
-         name
+GROUP BY f.id,
+         f.name
 ORDER BY COUNT(fl.film_id) DESC
 LIMIT 5
 
@@ -23,3 +23,14 @@ INNER JOIN user_friends AS uf2 ON uf1.user2_id = uf2.user2_id
 INNER JOIN user AS u ON uf1.user2_id = u.id
 WHERE uf1.user1_id = 1
   AND uf1.user2_id = 2
+
+3) 5 самых распространеннх жанров
+SELECT fg.id,
+       fg.name,
+       COUNT(f.id) DESC
+FROM film_genres AS fg
+LEFT OUTER JOIN film AS f ON fg.id = f.genre_id
+GROUP BY fg.id,
+         fg.name
+ORDER BY COUNT(f.id) DESC
+LIMIT 5
