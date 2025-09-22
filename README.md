@@ -7,7 +7,7 @@ Template repository for Filmorate project.
 Примеры запросов  
 1) Список 5 наиболее популярных фильмов  
 **SELECT** f.id,  
-&nbsp;&nbsp;&nbsp;&nbsp;f.name,
+&nbsp;&nbsp;&nbsp;&nbsp;f.name,  
 &nbsp;&nbsp;&nbsp;&nbsp;COUNT(fl.film_id)   
 **FROM** film AS f  
 **LEFT OUTER JOIN** film_likes AS fl ON f.id = fl.film_id  
