@@ -22,7 +22,7 @@ FROM user_friends AS uf1
 INNER JOIN user_friends AS uf2 ON uf1.user2_id = uf2.user2_id
 INNER JOIN user AS u ON uf1.user2_id = u.id
 WHERE uf1.user1_id = 1
-  AND uf1.user2_id = 2
+  AND uf2.user1_id = 2
 
 3) 5 самых распространеннх жанров
 SELECT fg.id,
@@ -34,3 +34,9 @@ GROUP BY fg.id,
          fg.name
 ORDER BY COUNT(f.id) DESC
 LIMIT 5
+
+4) Список фильмов с рейтингом PG-13
+SELECT f.name,
+FROM film AS f
+LEFT OUTER JOIN MPA_rating AS r ON f.rating_id = r.id
+WHERE r.name = 'PG-13'
