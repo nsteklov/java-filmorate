@@ -27,7 +27,7 @@ Template repository for Filmorate project.
 4) 5 самых распространеннх жанров  
 **SELECT** fg.id,  
 &nbsp;&nbsp;&nbsp;&nbsp;fg.name,  
-&nbsp;&nbsp;&nbsp;&nbsp;**COUNT**(f.id) DESC  
+&nbsp;&nbsp;&nbsp;&nbsp;COUNT(f.id) DESC  
 **FROM** film_genres AS fg  
 **LEFT OUTER JOIN** film AS f ON fg.id = f.genre_id  
 **GROUP BY** fg.id,  
