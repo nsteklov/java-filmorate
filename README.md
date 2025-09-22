@@ -32,7 +32,7 @@ Template repository for Filmorate project.
 **LEFT OUTER JOIN** film AS f ON fg.id = f.genre_id  
 **GROUP BY** fg.id,  
 &nbsp;&nbsp;&nbsp;&nbsp;fg.name  
-**ORDER BY COUNT**(f.id) DESC  
+**ORDER BY** COUNT(f.id) DESC  
 **LIMIT** 5  
 
 5) Список фильмов с рейтингом PG-13  
