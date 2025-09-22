@@ -1,8 +1,8 @@
 # java-filmorate
 Template repository for Filmorate project.
 
-
-<img width="871" height="760" alt="Image" src="https://github.com/user-attachments/assets/ebc0d563-d4d9-4311-be1c-bad9056d63c5" />
+**Схема базы данных**  
+<img width="871" height="760" alt="Image" src="https://github.com/user-attachments/assets/88d5155a-6068-4d9c-a8f7-1398b194c05c" />
 
 Примеры запросов  
 1) Список 5 наиболее популярных фильмов  
