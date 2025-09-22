@@ -4,17 +4,17 @@ Template repository for Filmorate project.
 
 <img width="852" height="760" alt="Image" src="https://github.com/user-attachments/assets/5ad0b047-aa9f-47ff-a77c-ba9f229de498" />
 
-Примеры запросов
-1) Список 5 наиболее популярных фильмов
-SELECT f.id,
-       f.name,
-       COUNT(fl.film_id) 
-FROM film AS f
-LEFT OUTER JOIN film_likes AS fl ON f.id = fl.film_id
-GROUP BY f.id,
-         f.name
-ORDER BY COUNT(fl.film_id) DESC
-LIMIT 5
+Примеры запросов  
+1) Список 5 наиболее популярных фильмов  
+SELECT f.id,  
+       f.name,  
+       COUNT(fl.film_id)   
+FROM film AS f  
+LEFT OUTER JOIN film_likes AS fl ON f.id = fl.film_id  
+GROUP BY f.id,  
+         f.name  
+ORDER BY COUNT(fl.film_id) DESC  
+LIMIT 5  
 
 2) Список общих друзей пользователей с id = 1 и id = 2
 SELECT u.name
