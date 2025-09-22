@@ -2,7 +2,7 @@
 Template repository for Filmorate project.
 
 
-<img width="852" height="760" alt="Image" src="https://github.com/user-attachments/assets/5ad0b047-aa9f-47ff-a77c-ba9f229de498" />
+<img width="871" height="760" alt="Image" src="https://github.com/user-attachments/assets/ebc0d563-d4d9-4311-be1c-bad9056d63c5" />
 
 Примеры запросов  
 1) Список 5 наиболее популярных фильмов  
