@@ -9,7 +9,7 @@ Template repository for Filmorate project.
 **SELECT** f.id,  
 &nbsp;&nbsp;&nbsp;&nbsp;f.name,
 &nbsp;&nbsp;&nbsp;&nbsp;COUNT(fl.film_id)   
-**FROM **film AS f  
+**FROM** film AS f  
 **LEFT OUTER JOIN** film_likes AS fl ON f.id = fl.film_id  
 **GROUP** BY f.id,  
 &nbsp;&nbsp;&nbsp;&nbsp;f.name  
