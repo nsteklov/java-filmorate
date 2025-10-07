@@ -1,4 +1,42 @@
 # java-filmorate
 Template repository for Filmorate project.
 
+**Схема базы данных**  
+<img width="871" height="760" alt="Image" src="https://github.com/user-attachments/assets/88d5155a-6068-4d9c-a8f7-1398b194c05c" />
 
+Примеры запросов
+1) Список 5 наиболее популярных фильмов  
+   **SELECT** f.id,  
+   &nbsp;&nbsp;&nbsp;&nbsp;f.name,  
+   &nbsp;&nbsp;&nbsp;&nbsp;COUNT(fl.film_id)   
+   **FROM** film AS f  
+   **LEFT OUTER JOIN** film_likes AS fl ON f.id = fl.film_id  
+   **GROUP** BY f.id,  
+   &nbsp;&nbsp;&nbsp;&nbsp;f.name  
+   **ORDER BY** COUNT(fl.film_id) DESC  
+   **LIMIT** 5
+
+3) Список общих друзей пользователей с id = 1 и id = 2  
+   **SELECT** u.name  
+   **FROM** user_friends AS uf1  
+   **INNER JOIN** user_friends AS uf2 ON uf1.user2_id = uf2.user2_id  
+   **INNER JOIN** user AS u ON uf1.user2_id = u.id  
+   **WHERE** uf1.user1_id = 1  
+   **AND** uf2.user1_id = 2
+
+4) 5 самых распространеннх жанров  
+   **SELECT** fg.id,  
+   &nbsp;&nbsp;&nbsp;&nbsp;fg.name,  
+   &nbsp;&nbsp;&nbsp;&nbsp;COUNT(f.id) DESC  
+   **FROM** film_genres AS fg  
+   **LEFT OUTER JOIN** film AS f ON fg.id = f.genre_id  
+   **GROUP BY** fg.id,  
+   &nbsp;&nbsp;&nbsp;&nbsp;fg.name  
+   **ORDER BY** COUNT(f.id) DESC  
+   **LIMIT** 5
+
+5) Список фильмов с рейтингом PG-13  
+   **SELECT** f.name,  
+   **FROM** film AS f  
+   **LEFT OUTER JOIN** MPA_rating AS r ON f.rating_id = r.id  
+   **WHERE** r.name = 'PG-13'  
