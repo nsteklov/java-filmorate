@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface MPARatingStorage {
     Collection<MPARating> findAll();
 
-    MPARating create(MPARating MPARating);
+    MPARating create(MPARating rating);
 
     MPARating update(MPARating newMPARating);
 
