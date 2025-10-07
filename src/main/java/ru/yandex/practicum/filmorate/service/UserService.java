@@ -79,10 +79,10 @@ public class UserService {
 
     public Collection<User> getUserFriends(Long id) {
         String query = """
-        SELECT *
-        FROM users as u
-        JOIN user_friends as uf ON u.id = uf.user2_id
-        WHERE uf.user1_id = :id""";
+                SELECT *
+                FROM users as u
+                JOIN user_friends as uf ON u.id = uf.user2_id
+                WHERE uf.user1_id = :id""";
 
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("id", id);
@@ -92,12 +92,12 @@ public class UserService {
 
     public Collection<User> getCommonFriends(Long id, Long otherId) {
         String query = """
-        SELECT *
-  		FROM users AS u
-        INNER JOIN user_friends AS uf1 ON u.id = uf1.user2_id
-  		INNER JOIN user_friends AS uf2 ON u.id = uf2.user2_id
-        WHERE uf1.user1_id = :id
-        AND uf2.user1_id = :otherId""";
+                    SELECT *
+                FROM users AS u
+                    INNER JOIN user_friends AS uf1 ON u.id = uf1.user2_id
+                INNER JOIN user_friends AS uf2 ON u.id = uf2.user2_id
+                    WHERE uf1.user1_id = :id
+                    AND uf2.user1_id = :otherId""";
 
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("id", id);

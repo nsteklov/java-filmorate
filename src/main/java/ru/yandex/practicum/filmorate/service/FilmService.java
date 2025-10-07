@@ -82,11 +82,11 @@ public class FilmService {
 
     public Collection<Film> findTheMostPopular(int count) {
         String query = """
-        SELECT * FROM films AS f LEFT JOIN
-        (SELECT film_id, count(user_id) AS likes FROM film_likes
-        GROUP BY film_id) AS fl ON f.id = fl.film_id
-        ORDER BY likes desc 
-        LIMIT :count""";
+                SELECT * FROM films AS f LEFT JOIN
+                (SELECT film_id, count(user_id) AS likes FROM film_likes
+                GROUP BY film_id) AS fl ON f.id = fl.film_id
+                ORDER BY likes desc 
+                LIMIT :count""";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("count", count);
         log.debug("Получен список {} наиболее популярных фильмов", count);
