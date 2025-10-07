@@ -10,12 +10,12 @@ import java.util.Set;
  * Film.
  */
 @Data
-@AllArgsConstructor
+//@AllArgsConstructor
 public class Film {
     private Long id;
     private String name;
     private String description;
-    private МРАRating rating;
+    private int rating_id;
     private LocalDate releaseDate;
     private int duration;
     private Set<Integer> genres;
