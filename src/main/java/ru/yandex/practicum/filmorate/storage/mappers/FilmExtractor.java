@@ -41,9 +41,9 @@ public class FilmExtractor implements ResultSetExtractor {
                 film.setReleaseDate(releaseDate.toLocalDate());
             }
             film.setRatingId(resultSet.getInt("rating_id"));
-            int genre_id = resultSet.getInt("genre_id");
-            if (genre_id != 0) {
-                genres.add(genre_id);
+            int genreId = resultSet.getInt("genre_id");
+            if (genreId != 0) {
+                genres.add(genreId);
             }
         }
         if (id != null) {
