@@ -114,7 +114,7 @@ public class FilmDbStorage implements FilmStorage {
             throw new ValidationException(error);
         }
         String query = """
-                UPDATE films SET name = :name, description = :description, rating_id = :rating_id, releaseDate = :releaseDate, duration = :duration 
+                UPDATE films SET name = :name, description = :description, rating_id = :rating_id, releaseDate = :releaseDate, duration = :duration
                 WHERE id = :id""";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", film.getName());
