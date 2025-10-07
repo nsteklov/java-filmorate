@@ -57,8 +57,8 @@ public class FilmDbStorage implements FilmStorage {
             throw new ValidationException(error);
         }
         String query = """
-                 INSERT INTO films (name, description, rating_id, releaseDate, duration)
-                 VALUES (:name, :description, :rating_id, :releaseDate, :duration);""";
+                INSERT INTO films (name, description, rating_id, releaseDate, duration)
+                VALUES (:name, :description, :rating_id, :releaseDate, :duration);""";
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", film.getName());
@@ -73,8 +73,8 @@ public class FilmDbStorage implements FilmStorage {
         Set<Integer> genres = film.getGenres();
         if (genres != null) {
             String queryGenres = """
-                 INSERT INTO film_genres (genre_id, film_id)
-                 VALUES (:genre_id, :film_id);""";
+                    INSERT INTO film_genres (genre_id, film_id)
+                    VALUES (:genre_id, :film_id);""";
             for (Integer genreId : genres) {
                 MapSqlParameterSource paramsGenre = new MapSqlParameterSource();
                 params.addValue("genre_id", genreId);
@@ -93,29 +93,29 @@ public class FilmDbStorage implements FilmStorage {
             log.error(error);
             throw new NotFoundException(error);
         }
-            if (film.getName() == null || film.getName().isBlank()) {
-                error = "Название не может быть пустым";
-                log.error(error);
-                throw new ValidationException(error);
-            }
-            if (film.getDescription().length() > 200) {
-                error = "Длина описания не может превышать 200 символов";
-                log.error(error);
-                throw new ValidationException(error);
-            }
-            if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-                error = "Дата релиза не может быть раньше 28 декабря 1895 года";
-                log.error(error);
-                throw new ValidationException(error);
-            }
-            if (film.getDuration() <= 0) {
-                error = "Продолжительность фильма должна быть положительным числом";
-                log.error(error);
-                throw new ValidationException(error);
-            }
+        if (film.getName() == null || film.getName().isBlank()) {
+            error = "Название не может быть пустым";
+            log.error(error);
+            throw new ValidationException(error);
+        }
+        if (film.getDescription().length() > 200) {
+            error = "Длина описания не может превышать 200 символов";
+            log.error(error);
+            throw new ValidationException(error);
+        }
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            error = "Дата релиза не может быть раньше 28 декабря 1895 года";
+            log.error(error);
+            throw new ValidationException(error);
+        }
+        if (film.getDuration() <= 0) {
+            error = "Продолжительность фильма должна быть положительным числом";
+            log.error(error);
+            throw new ValidationException(error);
+        }
         String query = """
-        UPDATE films SET name = :name, description = :description, rating_id = :rating_id, releaseDate = :releaseDate, duration = :duration 
-        WHERE id = :id""";
+                UPDATE films SET name = :name, description = :description, rating_id = :rating_id, releaseDate = :releaseDate, duration = :duration 
+                WHERE id = :id""";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", film.getName());
         params.addValue("description", film.getDescription());
@@ -133,8 +133,8 @@ public class FilmDbStorage implements FilmStorage {
         Set<Integer> genres = film.getGenres();
         if (genres != null) {
             String queryGenres = """
-                 INSERT INTO film_genres (genre_id, film_id)
-                 VALUES (:genre_id, :film_id);""";
+                    INSERT INTO film_genres (genre_id, film_id)
+                    VALUES (:genre_id, :film_id);""";
             for (Integer genreId : genres) {
                 MapSqlParameterSource paramsGenre = new MapSqlParameterSource();
                 params.addValue("genre_id", genreId);
@@ -160,7 +160,7 @@ public class FilmDbStorage implements FilmStorage {
         try {
             Map films = (Map) jdbc.query(query, params, extractor);
             log.debug("Найден фильм по id: {}", idOfFilm);
-            Film film = (Film)films.get(idOfFilm);
+            Film film = (Film) films.get(idOfFilm);
             return Optional.ofNullable(film);
         } catch (EmptyResultDataAccessException ignored) {
             return Optional.empty();

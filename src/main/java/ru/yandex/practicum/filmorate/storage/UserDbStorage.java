@@ -50,8 +50,8 @@ public class UserDbStorage implements UserStorage {
             throw new ValidationException(error);
         }
         String query = """
-                 INSERT INTO users (email, login, name, birthday)
-                 VALUES (:email, :login, :name, :birthday)""";
+                INSERT INTO users (email, login, name, birthday)
+                VALUES (:email, :login, :name, :birthday)""";
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("email", user.getEmail());

@@ -28,8 +28,8 @@ public class MPARatingDbStorage implements MPARatingStorage {
     @Override
     public MPARating create(MPARating rating) {
         String query = """
-                 INSERT INTO MPA_rating (name)
-                 VALUES (:name)""";
+                INSERT INTO MPA_rating (name)
+                VALUES (:name)""";
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", rating.getName());
@@ -41,8 +41,8 @@ public class MPARatingDbStorage implements MPARatingStorage {
     @Override
     public MPARating update(MPARating rating) {
         String query = """
-        UPDATE MPA_rating SET name = :name 
-        WHERE id = :id""";
+                UPDATE MPA_rating SET name = :name 
+                WHERE id = :id""";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", rating.getName());
         params.addValue("id", rating.getId());
