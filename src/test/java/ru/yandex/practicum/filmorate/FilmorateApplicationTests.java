@@ -1,38 +1,27 @@
 package ru.yandex.practicum.filmorate;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
 
+
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.controller.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.*;
 import ru.yandex.practicum.filmorate.storage.mappers.*;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.HashMap;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 
 @JdbcTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Import({UserDbStorage.class, UserRowMapper.class, FilmDbStorage.class, FilmRowMapper.class} )
+@Import({UserDbStorage.class, UserRowMapper.class, FilmDbStorage.class, FilmRowMapper.class, FilmExtractor.class} )
 class FilmorateApplicationTests {
 	private final UserDbStorage userStorage;
 	private final FilmDbStorage filmStorage;
@@ -50,7 +39,7 @@ class FilmorateApplicationTests {
 		Film film = new Film();
 		film.setName("film1");
 		film.setDescription("film1");
-		film.setRating_id(1);
+		film.setRatingId(1);
 		film.setReleaseDate(LocalDate.of(2002, 01, 01));
 		film.setDuration(123);
 		return film;
@@ -121,7 +110,7 @@ class FilmorateApplicationTests {
 		Film film = filmStorage.findFilmById(1L).get();
 		film.setName("film3");
 		film.setDescription("film3 description");
-		film.setRating_id(2);
+		film.setRatingId(2);
 		film.setReleaseDate(LocalDate.of(2004, 01, 01));
 		film.setDuration(12345);
 		filmStorage.update(film);
