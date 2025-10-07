@@ -41,7 +41,7 @@ public class GenreDbStorage implements GenreStorage {
     @Override
     public Genre update(Genre genre) {
         String query = """
-        UPDATE genres SET name = :name 
+        UPDATE genres SET name = :name
         WHERE id = :id""";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", genre.getName());

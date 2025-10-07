@@ -41,7 +41,7 @@ public class MPARatingDbStorage implements MPARatingStorage {
     @Override
     public MPARating update(MPARating rating) {
         String query = """
-                UPDATE MPA_rating SET name = :name 
+                UPDATE MPA_rating SET name = :name
                 WHERE id = :id""";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", rating.getName());
