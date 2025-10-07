@@ -21,7 +21,7 @@ public class FilmRowMapper implements RowMapper<Film> {
         if (releaseDate != null) {
             film.setReleaseDate(releaseDate.toLocalDate());
         }
-        film.setRating_id(resultSet.getInt("rating_id"));
+        film.setRatingId(resultSet.getInt("ratingId"));
 
         return film;
     }

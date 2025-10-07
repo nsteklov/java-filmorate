@@ -10,7 +10,7 @@ public class Film {
     private Long id;
     private String name;
     private String description;
-    private int rating_id;
+    private int ratingId;
     private LocalDate releaseDate;
     private int duration;
     private Set<Integer> genres;

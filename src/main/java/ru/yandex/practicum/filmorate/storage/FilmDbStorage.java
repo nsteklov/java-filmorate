@@ -63,7 +63,7 @@ public class FilmDbStorage implements FilmStorage {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", film.getName());
         params.addValue("description", film.getDescription());
-        params.addValue("rating_id", film.getRating_id());
+        params.addValue("rating_id", film.getRatingId());
         params.addValue("releaseDate", film.getReleaseDate());
         params.addValue("duration", film.getDuration());
         jdbc.update(query, params, keyHolder, new String[]{"id"});
@@ -119,7 +119,7 @@ public class FilmDbStorage implements FilmStorage {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", film.getName());
         params.addValue("description", film.getDescription());
-        params.addValue("rating_id", film.getRating_id());
+        params.addValue("rating_id", film.getRatingId());
         params.addValue("releaseDate", film.getReleaseDate());
         params.addValue("duration", film.getDuration());
         params.addValue("id", film.getId());
