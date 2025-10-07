@@ -60,7 +60,6 @@ public class UserDbStorage implements UserStorage {
         params.addValue("birthday", user.getBirthday());
         jdbc.update(query, params, keyHolder, new String[]{"id"});
         user.setId(keyHolder.getKeyAs(Long.class));
-        user.setFriends(new HashSet<>());
         log.info("Добавлен пользователь: {}", user);
         return user;
     }
@@ -109,7 +108,6 @@ public class UserDbStorage implements UserStorage {
         params.addValue("id", idOfUser);
         try {
             User user = jdbc.queryForObject(query, params, mapper);
-            user.setFriends(new HashSet<>());
             log.debug("Найден пользователь по id: {}", idOfUser);
             return Optional.ofNullable(user);
         } catch (EmptyResultDataAccessException ignored) {
