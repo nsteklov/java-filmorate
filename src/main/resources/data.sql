@@ -9,7 +9,7 @@ VALUES ( 'Комедия'),
 INSERT INTO MPA_rating (name)
 VALUES ( 'G'),
        ( 'PG'),
-       ( 'PG_13'),
+       ( 'PG-13'),
        ( 'R'),
-       ( 'NC_17');
+       ( 'NC-17');
 
