@@ -12,5 +12,5 @@ public interface MPARatingStorage {
 
     MPARating update(MPARating newMPARating);
 
-    Optional<MPARating> findMPARatingById(Long idOfGenre);
+    Optional<MPARating> findMPARatingById(int idOfGenre);
 }

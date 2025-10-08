@@ -54,7 +54,7 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public Optional<Genre> findGenreById(Long idOfGenre) {
+    public Optional<Genre> findGenreById(int idOfGenre) {
         String query = "SELECT * FROM genres WHERE id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("id", idOfGenre);

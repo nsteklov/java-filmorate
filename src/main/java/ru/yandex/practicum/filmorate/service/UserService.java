@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -43,6 +44,18 @@ public class UserService {
     }
 
     public void addFriend(Long id, Long friendId) {
+        Optional<User> optUser = findUserById(id);
+        if (optUser.isEmpty()) {
+            error = "Пользователь с id = " + id + " не найден";
+            log.error(error);
+            throw new NotFoundException(error);
+        }
+        Optional<User> optFriend = findUserById(friendId);
+        if (optFriend.isEmpty()) {
+            error = "Пользователь с id = " + friendId + " не найден";
+            log.error(error);
+            throw new NotFoundException(error);
+        }
         if (id == friendId) {
             error = "Пользователя нельзя добавить в друзья к самому себе";
             log.error(error);
@@ -58,6 +71,18 @@ public class UserService {
     }
 
     public boolean deleteFriend(Long id, Long friendId) {
+        Optional<User> optUser = findUserById(id);
+        if (optUser.isEmpty()) {
+            error = "Пользователь с id = " + id + " не найден";
+            log.error(error);
+            throw new NotFoundException(error);
+        }
+        Optional<User> optFriend = findUserById(friendId);
+        if (optFriend.isEmpty()) {
+            error = "Пользователь с id = " + friendId + " не найден";
+            log.error(error);
+            throw new NotFoundException(error);
+        }
         if (id == friendId) {
             error = "Пользователя не может быть в друзьях у самого себя";
             log.error(error);
@@ -78,6 +103,12 @@ public class UserService {
     }
 
     public Collection<User> getUserFriends(Long id) {
+        Optional<User> optUser = findUserById(id);
+        if (optUser.isEmpty()) {
+            error = "Пользователь с id = " + id + " не найден";
+            log.error(error);
+            throw new NotFoundException(error);
+        }
         String query = """
                 SELECT *
                 FROM users as u
@@ -91,6 +122,18 @@ public class UserService {
     }
 
     public Collection<User> getCommonFriends(Long id, Long otherId) {
+        Optional<User> optUser = findUserById(id);
+        if (optUser.isEmpty()) {
+            error = "Пользователь с id = " + id + " не найден";
+            log.error(error);
+            throw new NotFoundException(error);
+        }
+        Optional<User> optFriend = findUserById(otherId);
+        if (optFriend.isEmpty()) {
+            error = "Пользователь с id = " + otherId + " не найден";
+            log.error(error);
+            throw new NotFoundException(error);
+        }
         String query = """
                     SELECT *
                 FROM users AS u

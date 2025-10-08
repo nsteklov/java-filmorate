@@ -12,6 +12,9 @@ import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.MPARating;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.storage.mappers.FilmExtractor;
 
@@ -26,6 +29,8 @@ public class FilmDbStorage implements FilmStorage {
     private final NamedParameterJdbcOperations jdbc;
     private final FilmRowMapper mapper;
     private final FilmExtractor extractor;
+    private final MPARatingStorage ratingStorage;
+    private final GenreStorage genreStorage;
     String error;
 
     @Override
@@ -63,24 +68,44 @@ public class FilmDbStorage implements FilmStorage {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", film.getName());
         params.addValue("description", film.getDescription());
-        params.addValue("rating_id", film.getRatingId());
         params.addValue("releaseDate", film.getReleaseDate());
         params.addValue("duration", film.getDuration());
+        MPARating mpa = film.getMpa();
+        if (mpa != null) {
+            int mpaId = mpa.getId();
+            Optional<MPARating> optMpa = ratingStorage.findMPARatingById(mpaId);
+            if (optMpa.isEmpty()) {
+                error = "Рейтинг с id = " + mpaId + " не найден";
+                log.error(error);
+                throw new NotFoundException(error);
+            }
+            params.addValue("rating_id", mpa.getId());
+        } else {
+            params.addValue("rating_id", mpa);
+        }
         jdbc.update(query, params, keyHolder, new String[]{"id"});
         film.setId(keyHolder.getKeyAs(Long.class));
-        film.setLikes(new HashSet<>());
         Long filmId = film.getId();
-        Set<Integer> genres = film.getGenres();
+        Set<Genre> genres = film.getGenres();
         if (genres != null) {
             String queryGenres = """
                     INSERT INTO film_genres (genre_id, film_id)
                     VALUES (:genre_id, :film_id);""";
-            for (Integer genreId : genres) {
+            for (Genre genre : genres) {
+                int genreId = genre.getId();
+                Optional<Genre> optGenre = genreStorage.findGenreById(genreId);
+                if (optGenre.isEmpty()) {
+                    error = "Жанр с id = " + genreId + " не найден";
+                    log.error(error);
+                    throw new NotFoundException(error);
+                }
                 MapSqlParameterSource paramsGenre = new MapSqlParameterSource();
                 params.addValue("genre_id", genreId);
                 params.addValue("film_id", filmId);
                 jdbc.update(queryGenres, params);
             }
+        } else {
+            film.setGenres(new HashSet<>());
         }
         log.info("Добавлен фильм: {}", film);
         return film;
@@ -119,10 +144,22 @@ public class FilmDbStorage implements FilmStorage {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", film.getName());
         params.addValue("description", film.getDescription());
-        params.addValue("rating_id", film.getRatingId());
         params.addValue("releaseDate", film.getReleaseDate());
         params.addValue("duration", film.getDuration());
         params.addValue("id", film.getId());
+        MPARating mpa = film.getMpa();
+        if (mpa != null) {
+            int mpaId = mpa.getId();
+            Optional<MPARating> optMpa = ratingStorage.findMPARatingById(mpaId);
+            if (optMpa.isEmpty()) {
+                error = "Рейтинг с id = " + mpaId + " не найден";
+                log.error(error);
+                throw new NotFoundException(error);
+            }
+            params.addValue("rating_id", mpa.getId());
+        } else {
+            params.addValue("rating_id", mpa);
+        }
         int rowsUpdated = jdbc.update(query, params);
         Long filmId = film.getId();
         String queryDeleteGenres = "DELETE FROM film_genres WHERE film_id = :film_id";
@@ -130,12 +167,19 @@ public class FilmDbStorage implements FilmStorage {
         paramsDelete.addValue("film_id", filmId);
         jdbc.update(queryDeleteGenres, paramsDelete);
         System.out.println("d");
-        Set<Integer> genres = film.getGenres();
+        Set<Genre> genres = film.getGenres();
         if (genres != null) {
             String queryGenres = """
                     INSERT INTO film_genres (genre_id, film_id)
                     VALUES (:genre_id, :film_id);""";
-            for (Integer genreId : genres) {
+            for (Genre genre : genres) {
+                int genreId = genre.getId();
+                Optional<Genre> optGenre = genreStorage.findGenreById(genreId);
+                if (optGenre.isEmpty()) {
+                    error = "Жанр с id = " + genreId + " не найден";
+                    log.error(error);
+                    throw new NotFoundException(error);
+                }
                 MapSqlParameterSource paramsGenre = new MapSqlParameterSource();
                 params.addValue("genre_id", genreId);
                 params.addValue("film_id", filmId);

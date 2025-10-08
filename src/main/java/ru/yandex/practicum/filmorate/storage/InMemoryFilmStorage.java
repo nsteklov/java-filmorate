@@ -44,7 +44,6 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new ValidationException(error);
         }
         film.setId(getNextId());
-        film.setLikes(new HashSet<>());
         film.setGenres(new HashSet<>());
         films.put(film.getId(), film);
         log.info("Добавлен фильм: {}", film);
@@ -83,7 +82,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             oldFilm.setName(newFilm.getName());
             oldFilm.setDescription(newFilm.getDescription());
             oldFilm.setGenres(newFilm.getGenres());
-            oldFilm.setRatingId(newFilm.getRatingId());
+            oldFilm.setMpa(newFilm.getMpa());
             oldFilm.setReleaseDate(newFilm.getReleaseDate());
             oldFilm.setDuration(newFilm.getDuration());
             log.info("Обновлены данные фильма: {}", oldFilm);

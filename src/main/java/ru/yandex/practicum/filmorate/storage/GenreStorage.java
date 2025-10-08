@@ -12,5 +12,5 @@ public interface GenreStorage {
 
     Genre update(Genre newGenre);
 
-    Optional<Genre> findGenreById(Long idOfGenre);
+    Optional<Genre> findGenreById(int idOfGenre);
 }

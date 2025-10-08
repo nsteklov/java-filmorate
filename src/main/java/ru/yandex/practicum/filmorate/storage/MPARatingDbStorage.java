@@ -54,7 +54,7 @@ public class MPARatingDbStorage implements MPARatingStorage {
     }
 
     @Override
-    public Optional<MPARating> findMPARatingById(Long idOfMPARating) {
+    public Optional<MPARating> findMPARatingById(int idOfMPARating) {
         String query = "SELECT * FROM MPA_rating WHERE id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("id", idOfMPARating);

@@ -3,33 +3,45 @@ package ru.yandex.practicum.filmorate.storage.mappers;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.MPARating;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.MPARatingStorage;
 
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class FilmExtractor implements ResultSetExtractor {
+    private final MPARatingStorage mpaStorage;
+    private final GenreStorage genreStorage;
+
+    public FilmExtractor(MPARatingStorage mpaStorage, GenreStorage genreStorage) {
+        this.mpaStorage = mpaStorage;
+        this.genreStorage = genreStorage;
+    }
+
     @Override
     public Map<Long, Film> extractData(ResultSet resultSet) throws SQLException {
         Map<Long, Film> films = new HashMap<>();
         Long id = null;
         Long prevId = null;
         Film film = null;
-        Set<Integer> genres = new HashSet<>();
+        Comparator<Genre> genreComparator = Comparator.comparingInt(Genre::getId);
+        Set<Genre> genres = new HashSet<>();
         while (resultSet.next()) {
             id = resultSet.getLong("id");
             if (prevId != id) {
                 if (prevId != null) {
-                    film.setGenres(genres);
+                    Set<Genre> genreTree = new TreeSet<>(genreComparator);
+                    genreTree.addAll(genres);
+                    film.setGenres(genreTree);
                     films.put(id, film);
                 }
                 film = new Film();
-                genres = new HashSet<>();
                 prevId = id;
             }
             film.setId(resultSet.getLong("id"));
@@ -40,14 +52,22 @@ public class FilmExtractor implements ResultSetExtractor {
             if (releaseDate != null) {
                 film.setReleaseDate(releaseDate.toLocalDate());
             }
-            film.setRatingId(resultSet.getInt("rating_id"));
+            int ratingId = resultSet.getInt("rating_id");
+            Optional<MPARating> optMpa = mpaStorage.findMPARatingById(ratingId);
+            if (optMpa.isPresent()) {
+                film.setMpa(optMpa.get());
+            }
             int genreId = resultSet.getInt("genre_id");
-            if (genreId != 0) {
-                genres.add(genreId);
+            Optional<Genre> optGenre = genreStorage.findGenreById(genreId);
+            if (optGenre.isPresent()) {
+                Genre genre = optGenre.get();
+                genres.add(genre);
             }
         }
         if (id != null) {
-            film.setGenres(genres);
+            Set<Genre> genreTree = new TreeSet<>(genreComparator);
+            genreTree.addAll(genres);
+            film.setGenres(genreTree);
             films.put(id, film);
         }
         return films;

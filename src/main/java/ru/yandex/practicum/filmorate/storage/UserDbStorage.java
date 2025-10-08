@@ -66,8 +66,15 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User update(User user) {
+        Long id = user.getId();
         if (user.getId() == null) {
             error = "Id должен быть указан";
+            log.error(error);
+            throw new NotFoundException(error);
+        }
+        Optional<User> optUser = findUserById(id);
+        if (optUser.isEmpty()) {
+            error = "Пользователь с id = " + id + " не найден";
             log.error(error);
             throw new NotFoundException(error);
         }
