@@ -28,8 +28,8 @@ public class GenreDbStorage implements GenreStorage {
     @Override
     public Genre create(Genre genre) {
         String query = """
-                 INSERT INTO genres (name)
-                 VALUES (:name)""";
+                INSERT INTO genres (name)
+                VALUES (:name)""";
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", genre.getName());
@@ -41,8 +41,8 @@ public class GenreDbStorage implements GenreStorage {
     @Override
     public Genre update(Genre genre) {
         String query = """
-        UPDATE genres SET name = :name
-        WHERE id = :id""";
+                UPDATE genres SET name = :name
+                WHERE id = :id""";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", genre.getName());
         params.addValue("id", genre.getId());
