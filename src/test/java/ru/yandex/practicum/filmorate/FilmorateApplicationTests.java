@@ -19,7 +19,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @JdbcTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Import({UserDbStorage.class, UserRowMapper.class, FilmDbStorage.class, FilmRowMapper.class, FilmExtractor.class})
+@Import({UserDbStorage.class, UserRowMapper.class, FilmDbStorage.class, FilmRowMapper.class, FilmExtractor.class,
+		GenreDbStorage.class, GenreRowMapper.class, MPARatingDbStorage.class, MPARatingRowMapper.class})
 class FilmorateApplicationTests {
 	private final UserDbStorage userStorage;
 	private final FilmDbStorage filmStorage;
@@ -37,7 +38,6 @@ class FilmorateApplicationTests {
 		Film film = new Film();
 		film.setName("film1");
 		film.setDescription("film1");
-		film.setRatingId(1);
 		film.setReleaseDate(LocalDate.of(2002, 01, 01));
 		film.setDuration(123);
 		return film;
@@ -47,6 +47,7 @@ class FilmorateApplicationTests {
 	public void testFindUserById() {
 
 		User newUser = newUser();
+		System.out.println(newUser);
 		userStorage.create(newUser);
 		Long id = newUser.getId();
 
@@ -108,7 +109,6 @@ class FilmorateApplicationTests {
 		Film film = filmStorage.findFilmById(1L).get();
 		film.setName("film3");
 		film.setDescription("film3 description");
-		film.setRatingId(2);
 		film.setReleaseDate(LocalDate.of(2004, 01, 01));
 		film.setDuration(12345);
 		filmStorage.update(film);
