@@ -26,14 +26,4 @@ public class MPARatingController {
     public Optional<MPARating> findGenreById(@PathVariable int id) {
         return Optional.ofNullable(ratingStorage.findMPARatingById(id).orElseThrow(() -> new NotFoundException("Рейтинг не найден")));
     }
-
-    @PostMapping
-    public MPARating create(@RequestBody MPARating rating) {
-        return ratingStorage.create(rating);
-    }
-
-    @PutMapping
-    public MPARating update(@RequestBody MPARating newMPARating) {
-        return ratingStorage.update(newMPARating);
-    }
 }

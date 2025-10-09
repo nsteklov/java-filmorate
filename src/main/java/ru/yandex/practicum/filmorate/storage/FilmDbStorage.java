@@ -14,15 +14,16 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPARating;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.storage.mappers.FilmExtractor;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
-@RequiredArgsConstructor
 @Qualifier("FilmDbStorage")
 public class FilmDbStorage implements FilmStorage {
     private final NamedParameterJdbcOperations jdbc;
@@ -30,7 +31,17 @@ public class FilmDbStorage implements FilmStorage {
     private final FilmExtractor extractor;
     private final MPARatingStorage ratingStorage;
     private final GenreStorage genreStorage;
+    private final UserStorage userStorage;
     String error;
+
+    public FilmDbStorage(NamedParameterJdbcOperations jdbc, FilmRowMapper mapper, FilmExtractor extractor, MPARatingStorage ratingStorage, GenreStorage genreStorage, @Qualifier("UserDbStorage") UserStorage userStorage) {
+        this.jdbc = jdbc;
+        this.mapper = mapper;
+        this.extractor = extractor;
+        this.ratingStorage = ratingStorage;
+        this.genreStorage = genreStorage;
+        this.userStorage = userStorage;
+    }
 
     @Override
     public List<Film> findAll() {
@@ -90,19 +101,22 @@ public class FilmDbStorage implements FilmStorage {
             String queryGenres = """
                     INSERT INTO film_genres (genre_id, film_id)
                     VALUES (:genre_id, :film_id);""";
-            for (Genre genre : genres) {
-                int genreId = genre.getId();
-                Optional<Genre> optGenre = genreStorage.findGenreById(genreId);
-                if (optGenre.isEmpty()) {
-                    error = "Жанр с id = " + genreId + " не найден";
-                    log.error(error);
-                    throw new NotFoundException(error);
-                }
-                MapSqlParameterSource paramsGenre = new MapSqlParameterSource();
-                params.addValue("genre_id", genreId);
-                params.addValue("film_id", filmId);
-                jdbc.update(queryGenres, params);
-            }
+            List<MapSqlParameterSource> batchParams = genres.stream()
+                    .map(genre -> {
+                        int genreId = genre.getId();
+                        Optional<Genre> optGenre = genreStorage.findGenreById(genreId);
+                        if (optGenre.isEmpty()) {
+                            error = "Жанр с id = " + genreId + " не найден";
+                            log.error(error);
+                            throw new NotFoundException(error);
+                        }
+                        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+                        paramSource.addValue("genre_id", genreId);
+                        paramSource.addValue("film_id", filmId);
+                        return paramSource;
+                    })
+                    .collect(Collectors.toList());
+            jdbc.batchUpdate(queryGenres, batchParams.toArray(new MapSqlParameterSource[0]));
         } else {
             film.setGenres(new HashSet<>());
         }
@@ -208,5 +222,50 @@ public class FilmDbStorage implements FilmStorage {
         } catch (EmptyResultDataAccessException ignored) {
             return Optional.empty();
         }
+    }
+
+    public void addLike(Long id, Long userId) {
+        Optional<User> optUser = userStorage.findUserById(userId);
+        if (optUser.isEmpty()) {
+            error = "Пользователь с id = " + userId + " не найден";
+            log.error(error);
+            throw new NotFoundException(error);
+        }
+
+        String query = """
+                INSERT INTO film_likes (film_id, user_id)
+                VALUES (:film_id, :user_id)""";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("film_id", id);
+        params.addValue("user_id", userId);
+        jdbc.update(query, params);
+    }
+
+    public boolean deleteLike(Long id, Long userId) {
+        String query = "DELETE FROM film_likes WHERE film_id = :film_id AND user_id = :user_id";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("film_id", id);
+        params.addValue("user_id", userId);
+        int rowsDeleted = jdbc.update(query, params);
+        Optional<User> optUser = userStorage.findUserById(userId);
+        if (optUser.isEmpty()) {
+            log.warn("Пользователь с id = " + userId + " не найден");
+        } else {
+            log.info("Удален лайк фильма с id {} от пользователя с id {}", id, userId);
+        }
+        return rowsDeleted > 0;
+    }
+
+    public Collection<Film> findTheMostPopular(int count) {
+        String query = """
+                SELECT * FROM films AS f LEFT JOIN
+                (SELECT film_id, count(user_id) AS likes FROM film_likes
+                GROUP BY film_id) AS fl ON f.id = fl.film_id
+                ORDER BY likes desc
+                LIMIT :count""";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("count", count);
+        log.debug("Получен список {} наиболее популярных фильмов", count);
+        return jdbc.query(query, params, mapper);
     }
 }

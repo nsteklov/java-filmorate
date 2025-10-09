@@ -26,34 +26,6 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public Genre create(Genre genre) {
-        String query = """
-                INSERT INTO genres (name)
-                VALUES (:name)""";
-        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("name", genre.getName());
-        jdbc.update(query, params, keyHolder, new String[]{"id"});
-        genre.setId(keyHolder.getKeyAs(Integer.class));
-        return genre;
-    }
-
-    @Override
-    public Genre update(Genre genre) {
-        String query = """
-                UPDATE genres SET name = :name
-                WHERE id = :id""";
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("name", genre.getName());
-        params.addValue("id", genre.getId());
-        int rowsUpdated = jdbc.update(query, params);
-        if (rowsUpdated == 0) {
-            throw new InternalServerException("Не удалось обновить данные");
-        }
-        return genre;
-    }
-
-    @Override
     public Optional<Genre> findGenreById(int idOfGenre) {
         String query = "SELECT * FROM genres WHERE id = :id";
         MapSqlParameterSource params = new MapSqlParameterSource();

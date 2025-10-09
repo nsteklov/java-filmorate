@@ -1,19 +1,27 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
+    private final UserStorage userStorage;
     String error;
+
+    public InMemoryFilmStorage(@Qualifier("InMemoryUserStorage")UserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
 
     @Override
     public Collection<Film> findAll() {
@@ -102,6 +110,17 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .orElseThrow(() -> new NotFoundException("Фильм с id = " + idOfFilm + " не найден"));
         log.debug("Найден фильм по id: {}", idOfFilm);
         return Optional.ofNullable(film);
+    }
+
+    public void addLike(Long id, Long userId) {
+    }
+
+    public boolean deleteLike(Long id, Long userId) {
+        return true;
+    }
+
+    public Collection<Film> findTheMostPopular(int count) {
+        return null;
     }
 
     // вспомогательный метод для генерации идентификатора нового поста

@@ -26,14 +26,4 @@ public class GenreController {
     public Optional<Genre> findGenreById(@PathVariable int id) {
         return Optional.ofNullable(genreStorage.findGenreById(id).orElseThrow(() -> new NotFoundException("Жанр не найден")));
     }
-
-    @PostMapping
-    public Genre create(@RequestBody Genre genre) {
-        return genreStorage.create(genre);
-    }
-
-    @PutMapping
-    public Genre update(@RequestBody Genre newGenre) {
-        return genreStorage.update(newGenre);
-    }
 }

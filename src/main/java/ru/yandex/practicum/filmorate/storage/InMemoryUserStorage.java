@@ -101,6 +101,20 @@ public class InMemoryUserStorage implements UserStorage {
         return Optional.ofNullable(user);
     }
 
+    public void addFriend(Long id, Long friendId) {
+    }
+
+    public boolean deleteFriend(Long id, Long friendId) {
+        return true;
+    }
+
+    public Collection getUserFriends(Long id) {
+        return null;
+    }
+
+    public Collection getCommonFriends(Long id, Long otherId) {
+        return null;
+    }
 
     // вспомогательный метод для генерации идентификатора нового поста
     private long getNextId() {
