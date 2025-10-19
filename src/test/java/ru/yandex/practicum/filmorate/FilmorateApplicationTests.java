@@ -1,103 +1,125 @@
 package ru.yandex.practicum.filmorate;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import org.springframework.context.annotation.Import;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.controller.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.*;
+import ru.yandex.practicum.filmorate.storage.mappers.*;
 
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@SpringBootTest
+@JdbcTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@Import({UserDbStorage.class, UserRowMapper.class, FilmDbStorage.class, FilmRowMapper.class, FilmExtractor.class,
+		GenreDbStorage.class, GenreRowMapper.class, MPARatingDbStorage.class, MPARatingRowMapper.class})
 class FilmorateApplicationTests {
+	private final UserDbStorage userStorage;
+	private final FilmDbStorage filmStorage;
 
-	UserStorage userStorage = new InMemoryUserStorage();
-	FilmStorage filmStorage = new InMemoryFilmStorage();
-	FilmController filmController = new FilmController(new FilmService(filmStorage, userStorage));
-	UserController userController = new UserController(new UserService(userStorage));
+	public static User newUser() {
+		User user = new User();
+		user.setEmail("vasya@vasya.ru");
+		user.setLogin("vasya111");
+		user.setName("vasya");
+		user.setBirthday(LocalDate.of(2001, 01, 01));
+		return user;
+	}
 
-	@Test
-	public void exceptionWhenFilmNameIsEmpty() {
-		Film film = new Film(null, "", "Описание фильма", LocalDate.of(2001, 01, 01), 120, new HashSet<>());
-		assertThrows(ValidationException.class, () -> filmController.create(film));
+	public static Film newFilm() {
+		Film film = new Film();
+		film.setName("film1");
+		film.setDescription("film1");
+		film.setReleaseDate(LocalDate.of(2002, 01, 01));
+		film.setDuration(123);
+		return film;
 	}
 
 	@Test
-	public void exceptionWhenFilmDescriptionMoreThan200() {
-		String descripion = "";
-		for (int i = 1; i <= 201; i++) {
-			descripion += "A";
-		}
-		Film film = new Film(null, "Фильм 1", descripion, LocalDate.of(2001, 01, 01), 120, new HashSet<>());
-		assertThrows(ValidationException.class, () -> filmController.create(film));
+	public void testFindUserById() {
+
+		User newUser = newUser();
+		System.out.println(newUser);
+		userStorage.create(newUser);
+		Long id = newUser.getId();
+
+		Optional<User> userOptional = userStorage.findUserById(id);
+
+		assertThat(userOptional)
+				.isPresent()
+				.hasValueSatisfying(user ->
+						assertThat(user).hasFieldOrPropertyWithValue("id", id)
+				);
 	}
 
 	@Test
-	public void exceptionWhenFilmReleaseDateLessThan28121895() {
-		Film film = new Film(null, "Фильм 1", "Описание фильма", LocalDate.of(1895, 12, 27), 120, new HashSet<>());
-		assertThrows(ValidationException.class, () -> filmController.create(film));
+	public void testUpdateUser() {
+
+		User newUser = newUser();
+		userStorage.create(newUser);
+		Long id = newUser.getId();
+
+		User user = userStorage.findUserById(id).get();
+		user.setEmail("greekVodka@uso.ru");
+		user.setLogin("uso1");
+		user.setName("uso");
+		userStorage.update(user);
+
+		Optional<User> userOptional = userStorage.findUserById(id);
+
+		assertThat(userOptional)
+				.isPresent()
+				.get()
+				.usingRecursiveComparison()
+				.ignoringExpectedNullFields()
+				.isEqualTo(user);
 	}
 
 	@Test
-	public void exceptionWhenFilmDurationIsNotPositive() {
-		Film film = new Film(null, "Фильм 1", "Описание фильма", LocalDate.of(2001, 01, 01), 0, new HashSet<>());
-		assertThrows(ValidationException.class, () -> filmController.create(film));
+	public void testFindFilmById() {
+
+		Film newFilm = newFilm();
+		filmStorage.create(newFilm);
+		Long id = newFilm.getId();
+
+		Optional<Film> filmOptional = filmStorage.findFilmById(id);
+
+		assertThat(filmOptional)
+				.isPresent()
+				.hasValueSatisfying(film ->
+						assertThat(film).hasFieldOrPropertyWithValue("id", id)
+				);
 	}
 
 	@Test
-	public void exceptionWhenFilmIsNotFoundWhileUpdating() {
-		Film film = new Film(null, "Фильм 1", "Описание фильма", LocalDate.of(1995, 12, 27), 120, new HashSet<>());
-		filmController.create(film);
-		film.setId(null);
-		assertThrows(NotFoundException.class, () -> filmController.update(film));
-	}
+	public void testUpdateFilm() {
 
-	@Test
-	public void exceptionWhenUserEmailIsEmpty() {
-		User user = new User(null, "", "user1", "Vasya", LocalDate.of(2000, 01, 01), new HashSet<>());
-		assertThrows(ValidationException.class, () -> userController.create(user));
-	}
+		Film newFilm = newFilm();
+		filmStorage.create(newFilm);
+		Long id = newFilm.getId();
 
-	@Test
-	public void exceptionWhenUserEmailDoesNotContainAt() {
-		User user = new User(null, "email", "user1", "Vasya", LocalDate.of(2000, 01, 01), new HashSet<>());
-		assertThrows(ValidationException.class, () -> userController.create(user));
-	}
+		Film film = filmStorage.findFilmById(1L).get();
+		film.setName("film3");
+		film.setDescription("film3 description");
+		film.setReleaseDate(LocalDate.of(2004, 01, 01));
+		film.setDuration(12345);
+		filmStorage.update(film);
 
-	@Test
-	public void exceptionWhenUserLoginIsEmpty() {
-		User user = new User(null, "email@email.ru", "", "Vasya", LocalDate.of(2000, 01, 01), new HashSet<>());
-		assertThrows(ValidationException.class, () -> userController.create(user));
-	}
+		Optional<Film> filmOptional = filmStorage.findFilmById(id);
 
-	@Test
-	public void exceptionWhenUserLoginContainsSpaces() {
-		User user = new User(null, "email@email.ru", "user  1", "Vasya", LocalDate.of(2000, 01, 01), new HashSet<>());
-		assertThrows(ValidationException.class, () -> userController.create(user));
-	}
-
-	@Test
-	public void exceptionWhenBirthdayIsFutureDate() {
-		User user = new User(null, "email@email.ru", "user1", "Vasya", LocalDate.of(3000, 01, 01), new HashSet<>());
-		assertThrows(ValidationException.class, () -> userController.create(user));
-	}
-
-	@Test
-	public void exceptionWhenUserIsNotFoundWhileUpdating() {
-		User user = new User(null, "email@email.ru", "user1", "Vasya", LocalDate.of(2000, 01, 01), new HashSet<>());
-		userController.create(user);
-		user.setId(145L);
-		assertThrows(NotFoundException.class, () -> userController.update(user));
+		assertThat(filmOptional)
+				.isPresent()
+				.get()
+				.usingRecursiveComparison()
+				.ignoringExpectedNullFields()
+				.isEqualTo(film);
 	}
 }

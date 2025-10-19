@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -11,6 +12,7 @@ import java.util.*;
 
 @Slf4j
 @Component
+@Qualifier("InMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
     String error;
@@ -43,7 +45,6 @@ public class InMemoryUserStorage implements UserStorage {
             user.setName(user.getLogin());
         }
         log.info("Добавлен пользователь: {}", user);
-        user.setFriends(new HashSet<>());
         users.put(user.getId(), user);
         return user;
     }
@@ -100,6 +101,20 @@ public class InMemoryUserStorage implements UserStorage {
         return Optional.ofNullable(user);
     }
 
+    public void addFriend(Long id, Long friendId) {
+    }
+
+    public boolean deleteFriend(Long id, Long friendId) {
+        return true;
+    }
+
+    public Collection getUserFriends(Long id) {
+        return null;
+    }
+
+    public Collection getCommonFriends(Long id, Long otherId) {
+        return null;
+    }
 
     // вспомогательный метод для генерации идентификатора нового поста
     private long getNextId() {
